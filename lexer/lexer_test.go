@@ -104,3 +104,28 @@ func TestFunctionCall(t *testing.T) {
 
 	l.validateExpectations(t, tests)
 }
+
+func TestOperators(t *testing.T) {
+	input := `!-/*5;
+	5 < 10 > 5;`
+
+	tests := []ExpectedToken{
+		{ token.BANG, "!"},
+		{token.MINUS, "-"},
+		{token.SLASH, "/"},
+		{token.ASTERISK, "*"},
+		{token.INT, "5"},
+		{token.SEMICOLON, ";"},
+		{token.INT, "5"},
+		{token.LT, "<"},
+		{token.INT, "10"},
+		{token.GT, ">"},
+		{token.INT, "5"},
+		{token.SEMICOLON, ";"},
+		{token.EOF, ""},
+	}
+
+	l := New(input)
+
+	l.validateExpectations(t, tests)
+}
