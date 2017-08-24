@@ -5,16 +5,34 @@ import (
 	"../token"
 )
 
+type ExpectedToken struct {
+	expectedType token.TokenType
+	expectedLiteral string
+}
+
+func (l *Lexer) validateExpectations( t *testing.T, expectedTokens []ExpectedToken) {
+	for i, tt := range expectedTokens {
+		tok := l.NextToken()
+
+		if tok.Type != tt.expectedType {
+			t.Fatalf("tests[%d] - tokentype wrong. expected=%q, got=%q '%q'",
+				i, tt.expectedType, tok.Type, tok.Literal)
+		}
+
+		if tok.Literal != tt.expectedLiteral {
+			t.Fatalf("tests[%d] - literal wrong. expected=%q, got=%q",
+				i, tt.expectedLiteral, tok.Literal)
+		}
+	}
+}
+
 func TestVariableDeclaration(t *testing.T) {
 	input := `let five = 5;
 	let ten = 10;
 
 	`
 
-	tests := []struct{
-		expectedType token.TokenType
-		expectedLiteral string
-	}{
+	tests := []ExpectedToken{
 		{token.LET, "let"},
 		{token.IDENT, "five"},
 		{token.ASSIGN, "="},
@@ -30,19 +48,7 @@ func TestVariableDeclaration(t *testing.T) {
 
 	l := New(input)
 
-	for i, tt := range tests {
-		tok := l.NextToken()
-
-		if tok.Type != tt.expectedType {
-			t.Fatalf("tests[%d] - tokentype wrong. expected=%q, got=%q '%q'",
-			i, tt.expectedType, tok.Type, tok.Literal)
-		}
-
-		if tok.Literal != tt.expectedLiteral {
-			t.Fatalf("tests[%d] - literal wrong. expected=%q, got=%q",
-			i, tt.expectedLiteral, tok.Literal)
-		}
-	}
+	l.validateExpectations(t, tests)
 }
 
 
@@ -51,10 +57,7 @@ func TestFunctionDefinition(t *testing.T) {
 		x + y;
 	};`
 
-	tests := []struct{
-		expectedType token.TokenType
-		expectedLiteral string
-	}{
+	tests := []ExpectedToken{
 		{token.LET, "let"},
 		{token.IDENT, "add"},
 		{token.ASSIGN, "="},
@@ -76,29 +79,14 @@ func TestFunctionDefinition(t *testing.T) {
 
 	l := New(input)
 
-	for i, tt := range tests {
-		tok := l.NextToken()
-
-		if tok.Type != tt.expectedType {
-			t.Fatalf("tests[%d] - tokentype wrong. expected=%q, got=%q '%q'",
-				i, tt.expectedType, tok.Type, tok.Literal)
-		}
-
-		if tok.Literal != tt.expectedLiteral {
-			t.Fatalf("tests[%d] - literal wrong. expected=%q, got=%q",
-				i, tt.expectedLiteral, tok.Literal)
-		}
-	}
+	l.validateExpectations(t, tests)
 }
 
 
 func TestFunctionCall(t *testing.T) {
 	input := `let result = add(five, ten);`
 
-	tests := []struct{
-		expectedType token.TokenType
-		expectedLiteral string
-	}{
+	tests := []ExpectedToken{
 		{ token.LET, "let"},
 		{token.IDENT, "result"},
 		{token.ASSIGN, "="},
@@ -114,17 +102,5 @@ func TestFunctionCall(t *testing.T) {
 
 	l := New(input)
 
-	for i, tt := range tests {
-		tok := l.NextToken()
-
-		if tok.Type != tt.expectedType {
-			t.Fatalf("tests[%d] - tokentype wrong. expected=%q, got=%q '%q'",
-				i, tt.expectedType, tok.Type, tok.Literal)
-		}
-
-		if tok.Literal != tt.expectedLiteral {
-			t.Fatalf("tests[%d] - literal wrong. expected=%q, got=%q",
-				i, tt.expectedLiteral, tok.Literal)
-		}
-	}
+	l.validateExpectations(t, tests)
 }
