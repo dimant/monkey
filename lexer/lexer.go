@@ -54,6 +54,8 @@ func (l *Lexer) NextToken() token.Token {
 		}
 	}
 
+	l.skipWhitespace()
+
 	l.readChar()
 	return tok
 }
