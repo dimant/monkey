@@ -163,3 +163,25 @@ func TestControlFlow(t *testing.T) {
 
 	l.validateExpectations(t, tests)
 }
+
+func TestTwoCharOperators(t *testing.T) {
+	input := `
+	5 == 5;
+	10 != 5;`
+
+	tests := []ExpectedToken{
+		{ token.INT, "5"},
+		{token.EQ, "=="},
+		{token.INT, "5"},
+		{token.SEMICOLON, ";"},
+		{token.INT, "10"},
+		{token.NOT_EQ, "!="},
+		{token.INT, "5"},
+		{token.SEMICOLON, ";"},
+		{token.EOF, ""},
+	}
+
+	l := New(input)
+
+	l.validateExpectations(t, tests)
+}
